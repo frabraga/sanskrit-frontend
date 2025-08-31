@@ -4,4 +4,7 @@ export default [
   index("routes/home.tsx"),
   route("/sutras", "routes/sutras.tsx"),
   route("/sutra/:number", "routes/sutra.tsx"),
+  route("/shabda-manjari", "routes/shabda-manjari.tsx"),
+  route("/maheshvara-sutrani", "routes/maheshvara-sutrani.tsx"),
+  route("/pratishakhyam", "routes/pratishakhyam.tsx"),
 ] satisfies RouteConfig;
