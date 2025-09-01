@@ -10,22 +10,22 @@ export default function ShabdaManjariPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const currentIndex = parseInt(searchParams.get("current") || "1");
-  
+
   useEffect(() => {
     const loadShabda = async () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const [allShabdas, currentShabda] = await Promise.all([
           getAllShabdas(),
-          getShabdaByIndex(currentIndex)
+          getShabdaByIndex(currentIndex),
         ]);
-        
+
         setTotalCount(allShabdas.length);
-        
+
         if (!currentShabda && allShabdas.length > 0) {
           // Se não encontrou o índice, pega o primeiro
           setShabda(allShabdas[0]);
@@ -40,22 +40,22 @@ export default function ShabdaManjariPage() {
         setLoading(false);
       }
     };
-    
+
     loadShabda();
   }, [currentIndex, setSearchParams]);
-  
+
   const handlePrevious = () => {
     if (currentIndex > 1) {
       setSearchParams({ current: (currentIndex - 1).toString() });
     }
   };
-  
+
   const handleNext = () => {
     if (currentIndex < totalCount) {
       setSearchParams({ current: (currentIndex + 1).toString() });
     }
   };
-  
+
   if (loading) {
     return (
       <SanskritLayout>
@@ -65,7 +65,7 @@ export default function ShabdaManjariPage() {
       </SanskritLayout>
     );
   }
-  
+
   if (error || !shabda) {
     return (
       <SanskritLayout>
@@ -95,13 +95,13 @@ export default function ShabdaManjariPage() {
                 >
                   ← Anterior
                 </button>
-                
+
                 <div className="text-center">
                   <span className="text-sm md:text-base text-gray-600 font-medium">
                     Shabda {currentIndex} de {totalCount}
                   </span>
                 </div>
-                
+
                 <button
                   onClick={handleNext}
                   disabled={currentIndex >= totalCount}
@@ -152,7 +152,7 @@ export default function ShabdaManjariPage() {
                         </td>
                         <td
                           className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
-                            index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-50'
+                            index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
                           }`}
                           style={{ fontFamily: "serif" }}
                         >
@@ -160,7 +160,7 @@ export default function ShabdaManjariPage() {
                         </td>
                         <td
                           className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
-                            index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-50'
+                            index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
                           }`}
                           style={{ fontFamily: "serif" }}
                         >
@@ -168,7 +168,7 @@ export default function ShabdaManjariPage() {
                         </td>
                         <td
                           className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
-                            index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-50'
+                            index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
                           }`}
                           style={{ fontFamily: "serif" }}
                         >

@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import SanskritLayout from "~/components/SanskritLayout";
 
 export function meta() {
@@ -89,6 +90,59 @@ export default function Home() {
                 >
                   पाणिनिं सूत्रकारं च प्रणतोऽस्मि मुनित्रयम् ॥
                 </p>
+              </div>
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="px-8 md:px-16 mb-12">
+              <div className="grid grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+                <Link
+                  to="/shabda-manjari"
+                  className="block bg-white border-6 border-blue-600 p-4 md:p-6 text-center hover:bg-gray-200 transition-colors duration-200"
+                >
+                  <span
+                    className="text-xl md:text-3xl font-bold text-black"
+                    style={{ fontFamily: "serif" }}
+                  >
+                    शब्द-मञ्जरी
+                  </span>
+                </Link>
+
+                <Link
+                  to="/maheshvara-sutrani"
+                  className="block bg-white border-6 border-blue-600 p-4 md:p-6 text-center hover:bg-gray-200 transition-colors duration-200"
+                >
+                  <span
+                    className="text-xl md:text-3xl font-bold text-black"
+                    style={{ fontFamily: "serif" }}
+                  >
+                    महेश्वर-सूत्राणि
+                  </span>
+                </Link>
+
+                <Link
+                  to="/sutras"
+                  className="block bg-white border-6 border-blue-600 p-4 md:p-6 text-center hover:bg-gray-200 transition-colors duration-200"
+                >
+                  <span
+                    className="text-xl md:text-3xl font-bold text-black"
+                    style={{ fontFamily: "serif" }}
+                  >
+                    अष्टाध्यायी
+                  </span>
+                </Link>
+
+                <Link
+                  to="/pratishakhyam"
+                  className="block bg-white border-6 border-blue-600 p-4 md:p-6 text-center hover:bg-gray-200 transition-colors duration-200"
+                >
+                  <span
+                    className="text-xl md:text-3xl font-bold text-black"
+                    style={{ fontFamily: "serif" }}
+                  >
+                    प्रातिशाख्यम्
+                  </span>
+                </Link>
               </div>
             </div>
 
