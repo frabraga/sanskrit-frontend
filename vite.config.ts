@@ -5,4 +5,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
+  define: {
+    'process.env.STRAPI_URL': JSON.stringify(process.env.STRAPI_URL),
+    'process.env.STRAPI_API_KEY': JSON.stringify(process.env.STRAPI_API_KEY),
+  },
 });

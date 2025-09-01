@@ -1,6 +1,82 @@
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import SanskritLayout from "~/components/SanskritLayout";
+import { getAllShabdas, getShabdaByIndex } from "~/services/api";
+import type { Shabda } from "~/types/sutra";
 
 export default function ShabdaManjariPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [shabda, setShabda] = useState<Shabda | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  const currentIndex = parseInt(searchParams.get("current") || "1");
+  
+  useEffect(() => {
+    const loadShabda = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const [allShabdas, currentShabda] = await Promise.all([
+          getAllShabdas(),
+          getShabdaByIndex(currentIndex)
+        ]);
+        
+        setTotalCount(allShabdas.length);
+        
+        if (!currentShabda && allShabdas.length > 0) {
+          // Se não encontrou o índice, pega o primeiro
+          setShabda(allShabdas[0]);
+          setSearchParams({ current: allShabdas[0].order_index.toString() });
+        } else {
+          setShabda(currentShabda);
+        }
+      } catch (err) {
+        console.error("Error loading shabda:", err);
+        setError("Erro ao carregar shabda");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadShabda();
+  }, [currentIndex, setSearchParams]);
+  
+  const handlePrevious = () => {
+    if (currentIndex > 1) {
+      setSearchParams({ current: (currentIndex - 1).toString() });
+    }
+  };
+  
+  const handleNext = () => {
+    if (currentIndex < totalCount) {
+      setSearchParams({ current: (currentIndex + 1).toString() });
+    }
+  };
+  
+  if (loading) {
+    return (
+      <SanskritLayout>
+        <div className="p-4 text-center">
+          <h2 className="text-2xl font-bold text-gray-900">Carregando...</h2>
+        </div>
+      </SanskritLayout>
+    );
+  }
+  
+  if (error || !shabda) {
+    return (
+      <SanskritLayout>
+        <div className="p-4 text-center">
+          <h2 className="text-2xl font-bold text-gray-900">
+            {error || "Nenhum shabda encontrado"}
+          </h2>
+        </div>
+      </SanskritLayout>
+    );
+  }
   return (
     <SanskritLayout>
       <div className="p-2 md:p-4">
@@ -10,18 +86,43 @@ export default function ShabdaManjariPage() {
             {/* Content Section */}
             <div className="px-2 md:px-8 pb-8 md:pb-16">
               {/* Subantam Section */}
+              {/* Navigation */}
+              <div className="flex justify-between items-center mb-6 mt-6 px-4 md:px-8">
+                <button
+                  onClick={handlePrevious}
+                  disabled={currentIndex <= 1}
+                  className="flex items-center px-6 py-3 bg-blue-600 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors font-medium"
+                >
+                  ← Anterior
+                </button>
+                
+                <div className="text-center">
+                  <span className="text-sm md:text-base text-gray-600 font-medium">
+                    Shabda {currentIndex} de {totalCount}
+                  </span>
+                </div>
+                
+                <button
+                  onClick={handleNext}
+                  disabled={currentIndex >= totalCount}
+                  className="flex items-center px-6 py-3 bg-blue-600 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Próximo →
+                </button>
+              </div>
+
               <div className="text-center mb-8">
                 <h2
                   className="text-3xl md:text-5xl font-bold text-gray-900 mb-3 md:mb-4 mt-4 md:mt-8"
                   style={{ fontFamily: "serif" }}
                 >
-                  सुबन्तम्
+                  {shabda.category}
                 </h2>
                 <h3
                   className="text-lg md:text-3xl font-semibold text-gray-800 mb-4 md:mb-6"
                   style={{ fontFamily: "serif" }}
                 >
-                  १. अकारान्तः पुंलिङ्गः 'राम' शब्दः (Rāma)
+                  {shabda.title}
                 </h3>
               </div>
 
@@ -44,198 +145,37 @@ export default function ShabdaManjariPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Nominative */}
-                    <tr>
-                      <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
-                        1
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामः
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामौ
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामाः
-                      </td>
-                    </tr>
-                    {/* Vocative */}
-                    <tr>
-                      <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
-                        V
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        हे राम
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        हे रामौ
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        हे रामाः
-                      </td>
-                    </tr>
-                    {/* Accusative */}
-                    <tr>
-                      <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
-                        2
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामम्
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामौ
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामान्
-                      </td>
-                    </tr>
-                    {/* Instrumental */}
-                    <tr>
-                      <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
-                        3
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामेण
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामाभ्याम्
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामैः
-                      </td>
-                    </tr>
-                    {/* Dative */}
-                    <tr>
-                      <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
-                        4
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामाय
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामाभ्याम्
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामेभ्यः
-                      </td>
-                    </tr>
-                    {/* Ablative */}
-                    <tr>
-                      <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
-                        5
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामात्
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामाभ्याम्
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामेभ्यः
-                      </td>
-                    </tr>
-                    {/* Genitive */}
-                    <tr>
-                      <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
-                        6
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामस्य
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामयोः
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-100 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामाणाम्
-                      </td>
-                    </tr>
-                    {/* Locative */}
-                    <tr>
-                      <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
-                        7
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामे
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामयोः
-                      </td>
-                      <td
-                        className="border-2 border-blue-700 bg-blue-50 text-black p-1 md:p-4 text-center text-base md:text-2xl"
-                        style={{ fontFamily: "serif" }}
-                      >
-                        रामेषु
-                      </td>
-                    </tr>
+                    {shabda.declensions.map((declension, index) => (
+                      <tr key={declension.id}>
+                        <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
+                          {declension.case_label}
+                        </td>
+                        <td
+                          className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
+                            index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-50'
+                          }`}
+                          style={{ fontFamily: "serif" }}
+                        >
+                          {declension.singular}
+                        </td>
+                        <td
+                          className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
+                            index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-50'
+                          }`}
+                          style={{ fontFamily: "serif" }}
+                        >
+                          {declension.dual}
+                        </td>
+                        <td
+                          className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
+                            index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-50'
+                          }`}
+                          style={{ fontFamily: "serif" }}
+                        >
+                          {declension.plural}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

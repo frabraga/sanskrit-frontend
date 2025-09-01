@@ -9,3 +9,23 @@ export interface StrapiResponse<T> {
     };
   };
 }
+
+export interface Declension {
+  id: number;
+  case_label: string;
+  singular: string;
+  dual: string;
+  plural: string;
+}
+
+export interface Shabda {
+  id: number;
+  title: string;
+  category: string;
+  order_index: number;
+  is_published: boolean;
+  declensions: Declension[];
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
