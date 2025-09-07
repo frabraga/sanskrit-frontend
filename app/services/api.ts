@@ -1,4 +1,9 @@
-import type { StrapiResponse, Shabda } from "~/types/sutra";
+import type {
+  StrapiResponse,
+  Shabda,
+  Sutra,
+  PratisakhyaSutra,
+} from "~/types/sutra";
 
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const STRAPI_API_KEY = process.env.STRAPI_API_KEY;
@@ -56,5 +61,75 @@ export async function getShabdaByIndex(
   }
 
   const data: StrapiResponse<Shabda> = await response.json();
+  return data.data.length > 0 ? data.data[0] : null;
+}
+
+export async function getAllSutras(): Promise<Sutra[]> {
+  const response = await fetch(
+    `${STRAPI_URL}/api/panini-sutras?sort=number:asc`,
+    {
+      headers: apiHeaders,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch sutras: ${response.statusText}`);
+  }
+
+  const data: StrapiResponse<Sutra> = await response.json();
+  return data.data;
+}
+
+export async function getSutraByNumber(number: string): Promise<Sutra | null> {
+  const response = await fetch(
+    `${STRAPI_URL}/api/panini-sutras?filters[number][$eq]=${number}`,
+    {
+      headers: apiHeaders,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch sutra: ${response.statusText}`);
+  }
+
+  const data: StrapiResponse<Sutra> = await response.json();
+  return data.data.length > 0 ? data.data[0] : null;
+}
+
+export async function getAllPratisakhyaSutras(): Promise<PratisakhyaSutra[]> {
+  const response = await fetch(
+    `${STRAPI_URL}/api/pratisakhya-sutras?sort=number:asc`,
+    {
+      headers: apiHeaders,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch pratisakhya sutras: ${response.statusText}`
+    );
+  }
+
+  const data: StrapiResponse<PratisakhyaSutra> = await response.json();
+  return data.data;
+}
+
+export async function getPratisakhyaSutraByNumber(
+  number: string
+): Promise<PratisakhyaSutra | null> {
+  const response = await fetch(
+    `${STRAPI_URL}/api/pratisakhya-sutras?filters[number][$eq]=${number}`,
+    {
+      headers: apiHeaders,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch pratisakhya sutra: ${response.statusText}`
+    );
+  }
+
+  const data: StrapiResponse<PratisakhyaSutra> = await response.json();
   return data.data.length > 0 ? data.data[0] : null;
 }

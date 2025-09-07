@@ -29,3 +29,25 @@ export interface Shabda {
   updatedAt: string;
   publishedAt: string;
 }
+
+export interface Sutra {
+  id: number;
+  number: string;
+  sanskrit_text: string;
+  sanskrit_explanation: string;
+  portuguese_translation: string;
+  chapter: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+export interface PratisakhyaSutra {
+  id: number;
+  number: string;
+  sanskrit_text: string;
+  portuguese_translation: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
