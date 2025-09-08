@@ -29,7 +29,7 @@ const SanskritLayout: React.FC<SanskritLayoutProps> = ({ children }) => {
       ),
     },
     {
-      name: "महेश्वर-सूत्राणि",
+      name: "माहेश्वर-सूत्राणि",
       href: "/maheshvara-sutrani",
       icon: (
         <svg
