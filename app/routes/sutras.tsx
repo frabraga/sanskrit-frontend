@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import SanskritLayout from "~/components/SanskritLayout";
+import NavigationControls from "~/components/NavigationControls";
 import { getAllSutras, getSutraByNumber } from "~/services/api";
 import type { Sutra } from "~/types/sutra";
 
@@ -93,11 +94,20 @@ export default function SutrasPage() {
     <SanskritLayout>
       <div className="p-2 md:p-4">
         <div className="container mx-auto">
+          {/* Navigation outside the blue border */}
+          <NavigationControls
+            currentIndex={currentIndex}
+            totalCount={allSutras.length}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+            itemType="Sutra"
+          />
+
           {/* Main Content Container with Blue Border */}
           <div className="max-w-4xl mx-auto bg-white border-4 md:border-8 border-blue-700 rounded-none shadow-2xl min-h-[80vh] relative overflow-hidden">
             {/* Header with Lamp Image */}
-            <div className="text-center pt-8 pb-6">
-              <div className="mb-4">
+            <div className="text-center pt-6 pb-4">
+              <div className="inline-block">
                 <img
                   src="/images/lamp.png"
                   alt="Lamp"
@@ -105,72 +115,90 @@ export default function SutrasPage() {
                 />
               </div>
               <h1
-                className="text-4xl md:text-6xl font-bold text-black mb-4"
+                className="text-4xl md:text-6xl font-bold text-black mb-2"
                 style={{ fontFamily: "serif" }}
               >
                 अष्टाध्यायी
               </h1>
               <h2
-                className="text-2xl md:text-4xl font-bold text-black mb-8"
+                className="text-2xl md:text-4xl font-semibold text-black mb-2"
                 style={{ fontFamily: "serif" }}
               >
-                अथ प्रथमोऽध्यायः
+                {sutra.chapter_heading}
               </h2>
-            </div>
-
-            {/* Navigation */}
-            <div className="flex justify-between items-center mb-6 px-4 md:px-8">
-              <button
-                onClick={handlePrevious}
-                disabled={currentIndex <= 1}
-                className="flex items-center px-6 py-3 bg-blue-600 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors font-medium"
+              <h3
+                className="text-xl md:text-3xl font-semibold text-black mb-6"
+                style={{ fontFamily: "serif" }}
               >
-                ← Anterior
-              </button>
-
-              <div className="text-center">
-                <span className="text-sm md:text-base text-gray-600 font-medium">
-                  Sutra {currentIndex} de {allSutras.length}
-                </span>
-              </div>
-
-              <button
-                onClick={handleNext}
-                disabled={currentIndex >= allSutras.length}
-                className="flex items-center px-6 py-3 bg-blue-600 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors font-medium"
-              >
-                Próximo →
-              </button>
+                {sutra.pada_heading}
+              </h3>
             </div>
 
             {/* Content Section */}
-            <div className="px-4 md:px-12 pb-16">
-              {/* Sutra Number */}
-              <div className="text-center mb-6">
-                <h3
-                  className="font-bold text-black"
-                  style={{ fontFamily: "serif", fontSize: "28px" }}
-                >
-                  {sutra.number} {sutra.sanskrit_text}
-                </h3>
-              </div>
+            <div className="px-4 md:px-12 pb-16 text-center">
+              <p
+                className="font-bold text-black mb-4"
+                style={{ fontFamily: "serif", fontSize: "26px" }}
+              >
+                {sutra.number}
+              </p>
+              <h3
+                className="font-bold text-black text-4xl md:text-5xl mb-6"
+                style={{ fontFamily: "serif" }}
+              >
+                {sutra.sutra_text}
+              </h3>
 
-              {/* Sanskrit Explanation */}
-              <div className="text-center mb-8">
+              {sutra.padaccheda && (
                 <p
-                  className="text-black leading-relaxed"
-                  style={{ fontFamily: "serif", fontSize: "24px" }}
+                  className="text-black leading-relaxed mb-4"
+                  style={{ fontFamily: "serif", fontSize: "22px" }}
                 >
-                  {sutra.sanskrit_explanation}
+                  {sutra.padaccheda}
                 </p>
-              </div>
+              )}
 
-              {/* Portuguese Translation */}
-              <div className="text-center">
-                <p className="text-black leading-relaxed font-medium" style={{ fontSize: "20px" }}>
-                  {sutra.portuguese_translation}
+              {sutra.anuvrtti && (
+                <p
+                  className="text-black leading-relaxed mb-4"
+                  style={{ fontFamily: "serif", fontSize: "22px" }}
+                >
+                  {sutra.anuvrtti}
                 </p>
-              </div>
+              )}
+
+              {sutra.vrtti && (
+                <p
+                  className="text-black leading-relaxed mb-6"
+                  style={{ fontFamily: "serif", fontSize: "22px" }}
+                >
+                  {sutra.vrtti}
+                </p>
+              )}
+
+              <p
+                className="text-black leading-relaxed font-medium mb-6"
+                style={{ fontSize: "20px" }}
+              >
+                {sutra.portuguese_translation}
+              </p>
+
+              {sutra.example && (
+                <div className="text-center">
+                  <p
+                    className="text-black leading-relaxed font-semibold"
+                    style={{ fontSize: "20px" }}
+                  >
+                    Exemplo
+                  </p>
+                  <p
+                    className="text-black leading-relaxed"
+                    style={{ fontSize: "20px" }}
+                  >
+                    {sutra.example}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Footer */}

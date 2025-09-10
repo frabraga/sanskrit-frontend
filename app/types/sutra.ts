@@ -22,6 +22,7 @@ export interface Shabda {
   id: number;
   title: string;
   category: string;
+  prakarana_label: string;
   order_index: number;
   is_published: boolean;
   declensions: Declension[];
@@ -33,10 +34,16 @@ export interface Shabda {
 export interface Sutra {
   id: number;
   number: string;
-  sanskrit_text: string;
+  sutra_text: string;
   sanskrit_explanation: string;
   portuguese_translation: string;
-  chapter: number;
+  chapter_heading: string;
+  pada_heading: string;
+  padaccheda: string;
+  anuvrtti: string;
+  vrtti: string;
+  example: string;
+  is_published: boolean;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -45,8 +52,14 @@ export interface Sutra {
 export interface PratisakhyaSutra {
   id: number;
   number: string;
-  sanskrit_text: string;
+  sutra_text: string;
+  chapter_heading: string;
+  bhashya: string;
   portuguese_translation: string;
+  bhashya_translation_pt: string;
+  verse_explanation_pt: string;
+  example: string;
+  is_published: boolean;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;

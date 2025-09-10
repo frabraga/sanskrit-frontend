@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import SanskritLayout from "~/components/SanskritLayout";
-import { getAllPratisakhyaSutras, getPratisakhyaSutraByNumber } from "~/services/api";
+import NavigationControls from "~/components/NavigationControls";
+import {
+  getAllPratisakhyaSutras,
+  getPratisakhyaSutraByNumber,
+} from "~/services/api";
 import type { PratisakhyaSutra } from "~/types/sutra";
 
 export default function PratishakhyamPage() {
@@ -93,6 +97,15 @@ export default function PratishakhyamPage() {
     <SanskritLayout>
       <div className="p-2 md:p-4">
         <div className="container mx-auto">
+          {/* Navigation outside the blue border */}
+          <NavigationControls
+            currentIndex={currentIndex}
+            totalCount={allSutras.length}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+            itemType="Sutra"
+          />
+
           {/* Main Content Container with Blue Border */}
           <div className="max-w-4xl mx-auto bg-white border-4 md:border-8 border-blue-700 rounded-none shadow-2xl min-h-[80vh] relative overflow-hidden">
             {/* Header with Lamp Image */}
@@ -108,59 +121,84 @@ export default function PratishakhyamPage() {
                 className="font-bold text-black mb-4"
                 style={{ fontFamily: "serif", fontSize: "48px" }}
               >
-                तैत्तिरीय-प्रातिशाख्यम्
+                कृष्ण-यजुर्वेद-तैत्तिरीय-प्रातिशाख्यम्​
               </h1>
               <h2
                 className="font-bold text-black mb-8"
                 style={{ fontFamily: "serif", fontSize: "32px" }}
               >
-                प्रथमोऽध्यायः
+                {sutra.chapter_heading}
               </h2>
             </div>
 
-            {/* Navigation */}
-            <div className="flex justify-between items-center mb-6 px-4 md:px-8">
-              <button
-                onClick={handlePrevious}
-                disabled={currentIndex <= 1}
-                className="flex items-center px-6 py-3 bg-blue-600 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors font-medium"
-              >
-                ← Anterior
-              </button>
-
-              <div className="text-center">
-                <span className="text-sm md:text-base text-gray-600 font-medium">
-                  Sutra {currentIndex} de {allSutras.length}
-                </span>
-              </div>
-
-              <button
-                onClick={handleNext}
-                disabled={currentIndex >= allSutras.length}
-                className="flex items-center px-6 py-3 bg-blue-600 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors font-medium"
-              >
-                Próximo →
-              </button>
-            </div>
-
             {/* Content Section */}
-            <div className="px-4 md:px-12 pb-16">
-              {/* Sutra Number and Text */}
-              <div className="text-center mb-8">
-                <h3
-                  className="font-bold text-black mb-4"
-                  style={{ fontFamily: "serif", fontSize: "28px" }}
-                >
-                  {sutra.number} {sutra.sanskrit_text}
-                </h3>
-              </div>
+            <div className="px-4 md:px-12 pb-16 text-center">
+              <p
+                className="font-bold text-black mb-4"
+                style={{ fontFamily: "serif", fontSize: "36px" }}
+              >
+                {sutra.number}
+              </p>
 
-              {/* Portuguese Translation */}
-              <div className="text-center">
-                <p className="text-black leading-relaxed font-medium" style={{ fontSize: "20px" }}>
+              <h3
+                className="font-bold text-black text-4xl md:text-5xl mb-6"
+                style={{ fontFamily: "serif" }}
+              >
+                {sutra.sutra_text}
+              </h3>
+
+              {sutra.bhashya && (
+                <p
+                  className="text-black leading-relaxed mb-4"
+                  style={{ fontFamily: "serif", fontSize: "22px" }}
+                >
+                  {sutra.bhashya}
+                </p>
+              )}
+
+              {sutra.portuguese_translation && (
+                <p
+                  className="text-black leading-relaxed mb-4"
+                  style={{ fontSize: "20px" }}
+                >
                   {sutra.portuguese_translation}
                 </p>
-              </div>
+              )}
+
+              {sutra.verse_explanation_pt && (
+                <p
+                  className="text-black leading-relaxed mb-4"
+                  style={{ fontSize: "20px" }}
+                >
+                  {sutra.verse_explanation_pt}
+                </p>
+              )}
+
+              {sutra.bhashya_translation_pt && (
+                <p
+                  className="text-black leading-relaxed mb-6"
+                  style={{ fontSize: "20px" }}
+                >
+                  {sutra.bhashya_translation_pt}
+                </p>
+              )}
+
+              {sutra.example && (
+                <div className="text-center">
+                  <p
+                    className="text-black leading-relaxed font-semibold"
+                    style={{ fontSize: "20px" }}
+                  >
+                    exemplo
+                  </p>
+                  <p
+                    className="text-black leading-relaxed"
+                    style={{ fontSize: "20px" }}
+                  >
+                    {sutra.example}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Footer */}
