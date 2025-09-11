@@ -146,18 +146,26 @@ export default function SutrasPage() {
                 <p
                   className="text-black leading-relaxed mb-4"
                   style={{ fontFamily: "serif", fontSize: "22px" }}
-                >
-                  {sutra.padaccheda}
-                </p>
+                  dangerouslySetInnerHTML={{
+                    __html: sutra.padaccheda.replace(
+                      /(\d+\.\d+\.\d+|\d+\/\d+|[A-Z])/g,
+                      '<span style="font-size: 12px; vertical-align: sub;">$1</span>'
+                    )
+                  }}
+                />
               )}
 
               {sutra.anuvrtti && (
                 <p
                   className="text-black leading-relaxed mb-4"
                   style={{ fontFamily: "serif", fontSize: "22px" }}
-                >
-                  {sutra.anuvrtti}
-                </p>
+                  dangerouslySetInnerHTML={{
+                    __html: sutra.anuvrtti.replace(
+                      /(\d+\.\d+\.\d+|\d+\/\d+|[A-Z])/g,
+                      '<span style="font-size: 12px; vertical-align: sub;">$1</span>'
+                    )
+                  }}
+                />
               )}
 
               {sutra.vrtti && (
@@ -172,7 +180,11 @@ export default function SutrasPage() {
               {sutra.sanskrit_explanation && (
                 <p
                   className="text-black leading-relaxed mb-4"
-                  style={{ fontFamily: "serif", fontSize: "22px" }}
+                  style={{
+                    fontFamily: "serif",
+                    fontSize: "22px",
+                    fontWeight: "bold",
+                  }}
                 >
                   {sutra.sanskrit_explanation}
                 </p>
@@ -180,7 +192,7 @@ export default function SutrasPage() {
 
               <p
                 className="text-black leading-relaxed font-medium mb-6"
-                style={{ fontSize: "18px" }}
+                style={{ fontSize: "18px", fontWeight: "bold" }}
               >
                 {sutra.portuguese_translation}
               </p>

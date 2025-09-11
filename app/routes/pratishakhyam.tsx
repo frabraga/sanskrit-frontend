@@ -144,9 +144,13 @@ export default function PratishakhyamPage() {
                 <p
                   className="text-black leading-relaxed mb-4"
                   style={{ fontFamily: "serif", fontSize: "22px" }}
-                >
-                  {sutra.bhashya}
-                </p>
+                  dangerouslySetInnerHTML={{
+                    __html: sutra.bhashya.replace(
+                      /(\d+\.\d+\.\d+|\d+\/\d+|[A-Z])/g,
+                      '<span style="font-size: 12px; vertical-align: sub;">$1</span>'
+                    )
+                  }}
+                />
               )}
 
               {sutra.portuguese_translation && (
