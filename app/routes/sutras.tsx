@@ -105,30 +105,23 @@ export default function SutrasPage() {
 
           {/* Main Content Container with Blue Border */}
           <div className="max-w-4xl mx-auto bg-white border-4 md:border-8 border-blue-700 rounded-none shadow-2xl min-h-[80vh] relative overflow-hidden">
-            {/* Header with Lamp Image */}
+            {/* Header */}
             <div className="text-center pt-6 pb-4">
-              <div className="inline-block">
-                <img
-                  src="/images/lamp.png"
-                  alt="Lamp"
-                  className="w-16 h-20 md:w-20 md:h-24 mx-auto mb-2"
-                />
-              </div>
               <h1
-                className="text-4xl md:text-6xl font-bold text-black mb-2"
-                style={{ fontFamily: "serif" }}
+                className="font-bold text-black mb-2"
+                style={{ fontFamily: "serif", fontSize: "32px" }}
               >
                 अष्टाध्यायी
               </h1>
               <h2
-                className="text-2xl md:text-4xl font-semibold text-black mb-2"
-                style={{ fontFamily: "serif" }}
+                className="font-semibold text-black mb-2"
+                style={{ fontFamily: "serif", fontSize: "28px" }}
               >
                 {sutra.chapter_heading}
               </h2>
               <h3
-                className="text-xl md:text-3xl font-semibold text-black mb-6"
-                style={{ fontFamily: "serif" }}
+                className="font-semibold text-black mb-6"
+                style={{ fontFamily: "serif", fontSize: "24px" }}
               >
                 {sutra.pada_heading}
               </h3>
@@ -143,8 +136,8 @@ export default function SutrasPage() {
                 {sutra.number}
               </p>
               <h3
-                className="font-bold text-black text-4xl md:text-5xl mb-6"
-                style={{ fontFamily: "serif" }}
+                className="font-bold text-black mb-6"
+                style={{ fontFamily: "serif", fontSize: "40px" }}
               >
                 {sutra.sutra_text}
               </h3>
@@ -176,9 +169,18 @@ export default function SutrasPage() {
                 </p>
               )}
 
+              {sutra.sanskrit_explanation && (
+                <p
+                  className="text-black leading-relaxed mb-4"
+                  style={{ fontFamily: "serif", fontSize: "22px" }}
+                >
+                  {sutra.sanskrit_explanation}
+                </p>
+              )}
+
               <p
                 className="text-black leading-relaxed font-medium mb-6"
-                style={{ fontSize: "20px" }}
+                style={{ fontSize: "18px" }}
               >
                 {sutra.portuguese_translation}
               </p>
@@ -187,13 +189,13 @@ export default function SutrasPage() {
                 <div className="text-center">
                   <p
                     className="text-black leading-relaxed font-semibold"
-                    style={{ fontSize: "20px" }}
+                    style={{ fontSize: "16px" }}
                   >
                     Exemplo
                   </p>
                   <p
                     className="text-black leading-relaxed"
-                    style={{ fontSize: "20px" }}
+                    style={{ fontSize: "16px" }}
                   >
                     {sutra.example}
                   </p>

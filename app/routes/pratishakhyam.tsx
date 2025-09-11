@@ -108,24 +108,17 @@ export default function PratishakhyamPage() {
 
           {/* Main Content Container with Blue Border */}
           <div className="max-w-4xl mx-auto bg-white border-4 md:border-8 border-blue-700 rounded-none shadow-2xl min-h-[80vh] relative overflow-hidden">
-            {/* Header with Lamp Image */}
+            {/* Header */}
             <div className="text-center pt-8 pb-6">
-              <div className="mb-4">
-                <img
-                  src="/images/lamp.png"
-                  alt="Lamp"
-                  className="w-16 h-20 md:w-20 md:h-24 mx-auto mb-2"
-                />
-              </div>
               <h1
                 className="font-bold text-black mb-4"
-                style={{ fontFamily: "serif", fontSize: "48px" }}
+                style={{ fontFamily: "serif", fontSize: "32px" }}
               >
                 कृष्ण-यजुर्वेद-तैत्तिरीय-प्रातिशाख्यम्​
               </h1>
               <h2
                 className="font-bold text-black mb-8"
-                style={{ fontFamily: "serif", fontSize: "32px" }}
+                style={{ fontFamily: "serif", fontSize: "28px" }}
               >
                 {sutra.chapter_heading}
               </h2>
@@ -135,14 +128,14 @@ export default function PratishakhyamPage() {
             <div className="px-4 md:px-12 pb-16 text-center">
               <p
                 className="font-bold text-black mb-4"
-                style={{ fontFamily: "serif", fontSize: "36px" }}
+                style={{ fontFamily: "serif", fontSize: "26px" }}
               >
                 {sutra.number}
               </p>
 
               <h3
-                className="font-bold text-black text-4xl md:text-5xl mb-6"
-                style={{ fontFamily: "serif" }}
+                className="font-bold text-black mb-6"
+                style={{ fontFamily: "serif", fontSize: "40px" }}
               >
                 {sutra.sutra_text}
               </h3>
@@ -159,7 +152,7 @@ export default function PratishakhyamPage() {
               {sutra.portuguese_translation && (
                 <p
                   className="text-black leading-relaxed mb-4"
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: "18px" }}
                 >
                   {sutra.portuguese_translation}
                 </p>
@@ -168,7 +161,7 @@ export default function PratishakhyamPage() {
               {sutra.verse_explanation_pt && (
                 <p
                   className="text-black leading-relaxed mb-4"
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: "18px" }}
                 >
                   {sutra.verse_explanation_pt}
                 </p>
@@ -177,7 +170,7 @@ export default function PratishakhyamPage() {
               {sutra.bhashya_translation_pt && (
                 <p
                   className="text-black leading-relaxed mb-6"
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: "18px" }}
                 >
                   {sutra.bhashya_translation_pt}
                 </p>
@@ -187,13 +180,13 @@ export default function PratishakhyamPage() {
                 <div className="text-center">
                   <p
                     className="text-black leading-relaxed font-semibold"
-                    style={{ fontSize: "20px" }}
+                    style={{ fontSize: "16px" }}
                   >
                     exemplo
                   </p>
                   <p
                     className="text-black leading-relaxed"
-                    style={{ fontSize: "20px" }}
+                    style={{ fontSize: "16px" }}
                   >
                     {sutra.example}
                   </p>
