@@ -66,7 +66,7 @@ export async function getShabdaByIndex(
 
 export async function getAllSutras(): Promise<Sutra[]> {
   const response = await fetch(
-    `${STRAPI_URL}/api/panini-sutras?sort=number:asc&filters[is_published][$eq]=true`,
+    `${STRAPI_URL}/api/panini-sutras?sort=order_index:asc&filters[is_published][$eq]=true`,
     {
       headers: apiHeaders,
     }
@@ -98,7 +98,7 @@ export async function getSutraByNumber(number: string): Promise<Sutra | null> {
 
 export async function getAllPratisakhyaSutras(): Promise<PratisakhyaSutra[]> {
   const response = await fetch(
-    `${STRAPI_URL}/api/pratisakhya-sutras?sort=number:asc&filters[is_published][$eq]=true`,
+    `${STRAPI_URL}/api/pratisakhya-sutras?sort=order_index:asc&filters[is_published][$eq]=true`,
     {
       headers: apiHeaders,
     }
