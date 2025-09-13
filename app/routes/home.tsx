@@ -70,7 +70,7 @@ export default function Home() {
                   className="text-gray-900 font-semibold mt-4"
                   style={{ fontFamily: "serif" }}
                 >
-                  वेनाक्षर-समाम्नायम् अक्षिगम्य महेश्वरात् ।
+                  येनाक्षर-समाम्नायं अधिगम्य महेश्वरात् ।
                 </p>
                 <p
                   className="text-gray-900 font-semibold"
@@ -82,7 +82,7 @@ export default function Home() {
                   className="text-gray-900 font-semibold mt-4"
                   style={{ fontFamily: "serif" }}
                 >
-                  वाक्यकारं वरेन्येषु भाष्यकारं पतञ्जलिम् ।
+                  वाक्यकारं वररुचिं भाष्यकारं पतञ्जलिम् ।
                 </p>
                 <p
                   className="text-gray-900 font-semibold"
