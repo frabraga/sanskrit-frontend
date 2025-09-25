@@ -10,6 +10,28 @@ export interface StrapiResponse<T> {
   };
 }
 
+export interface StrapiMedia {
+  id: number;
+  documentId: string;
+  name: string;
+  alternativeText: string | null;
+  caption: string | null;
+  width: number | null;
+  height: number | null;
+  formats: any | null;
+  hash: string;
+  ext: string;
+  mime: string;
+  size: number;
+  url: string;
+  previewUrl: string | null;
+  provider: string;
+  provider_metadata: any | null;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
 export interface Declension {
   id: number;
   case_label: string;
@@ -26,6 +48,7 @@ export interface Shabda {
   order_index: number;
   is_published: boolean;
   declensions: Declension[];
+  audio?: StrapiMedia;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;

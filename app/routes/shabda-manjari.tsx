@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import SanskritLayout from "~/components/SanskritLayout";
 import NavigationControls from "~/components/NavigationControls";
+import AudioPlayer from "~/components/AudioPlayer";
 import { getAllShabdas, getShabdaByIndex } from "~/services/api";
 import type { Shabda } from "~/types/sutra";
 
@@ -96,7 +97,6 @@ export default function ShabdaManjariPage() {
           <div className="max-w-6xl mx-auto bg-white border-4 md:border-8 border-blue-700 rounded-none shadow-2xl min-h-[80vh] relative overflow-hidden">
             {/* Content Section */}
             <div className="px-2 md:px-8 pb-8 md:pb-16">
-
               <div className="text-center mb-8">
                 <h2
                   className="text-3xl md:text-5xl font-bold text-gray-900 mb-3 md:mb-4 mt-4 md:mt-8"
@@ -171,6 +171,16 @@ export default function ShabdaManjariPage() {
                   </tbody>
                 </table>
               </div>
+
+              {/* Audio Player Below Table */}
+              {shabda.audio && (
+                <div className="mt-6 md:mt-8 mb-4">
+                  <AudioPlayer
+                    audio={shabda.audio}
+                    className="max-w-2xl mx-auto"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Footer */}
