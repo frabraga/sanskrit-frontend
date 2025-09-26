@@ -20,7 +20,8 @@ export default function AudioPlayer({
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
-  const audioUrl = `${STRAPI_URL}${audio.url}`;
+  // Handle both absolute URLs (production) and relative URLs (local development)
+  const audioUrl = audio.url.startsWith('http') ? audio.url : `${STRAPI_URL}${audio.url}`;
 
   useEffect(() => {
     const audioElement = audioRef.current;
