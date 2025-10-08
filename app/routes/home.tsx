@@ -109,6 +109,18 @@ export default function Home() {
                 </Link>
 
                 <Link
+                  to="/vocabulario"
+                  className="block bg-white border-6 border-blue-600 p-4 md:p-6 text-center hover:bg-gray-200 transition-colors duration-200"
+                >
+                  <span
+                    className="text-xl md:text-3xl font-bold text-black"
+                    style={{ fontFamily: "serif" }}
+                  >
+                    शब्दकोशः
+                  </span>
+                </Link>
+
+                <Link
                   to="/maheshvara-sutrani"
                   className="block bg-white border-6 border-blue-600 p-4 md:p-6 text-center hover:bg-gray-200 transition-colors duration-200"
                 >

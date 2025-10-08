@@ -3,10 +3,12 @@ import type {
   Shabda,
   Sutra,
   PratisakhyaSutra,
+  VocabularyEntry,
 } from "~/types/sutra";
 
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
-const STRAPI_API_KEY = process.env.STRAPI_API_KEY;
+const STRAPI_API_KEY =
+  "6e47118ecd0462d7310dc80c58df163f3d4a3ffee93a7190bd3b01e4711683229caeb14d8b57b6902629bb44167168dc47576adbeea5f02629973be0ae9a41263c1ad42847213c08dc9274c88a6a0e677139d72ef5f8ac8ca3c0b67ee79859f92cd161e4174ef0f4df1f63782b058f55f3ae34d01002eb40cd8dea716f2824cf";
 
 const apiHeaders = {
   "Content-Type": "application/json",
@@ -132,4 +134,20 @@ export async function getPratisakhyaSutraByNumber(
 
   const data: StrapiResponse<PratisakhyaSutra> = await response.json();
   return data.data.length > 0 ? data.data[0] : null;
+}
+
+export async function getAllVocabulary(): Promise<VocabularyEntry[]> {
+  const response = await fetch(
+    `${STRAPI_URL}/api/vocabularies?sort=order_index:asc&filters[is_published][$eq]=true`,
+    {
+      headers: apiHeaders,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch vocabulary: ${response.statusText}`);
+  }
+
+  const data: StrapiResponse<VocabularyEntry> = await response.json();
+  return data.data;
 }

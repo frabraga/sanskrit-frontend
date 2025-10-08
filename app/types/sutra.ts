@@ -87,3 +87,68 @@ export interface PratisakhyaSutra {
   updatedAt: string;
   publishedAt: string;
 }
+
+export type WordType = "verb" | "substantive" | "indeclinable";
+export type Gender = "masculine" | "feminine" | "neuter";
+export type Voice = "parasmaipada" | "atmanepada" | "ubhayapada";
+
+export interface VocabularyEntry {
+  id: number;
+  documentId?: string;
+  word_type: WordType;
+  word_devanagari: string;
+  order_index: number;
+  is_published: boolean;
+  lesson_reference?: string;
+  notes?: string;
+  
+  // Transliteration fields
+  itrans?: string;
+  iast?: string;
+  harvard_kyoto?: string;
+  
+  // Translation fields
+  meaning_pt?: string;
+  meaning_es?: string;
+  meaning_en?: string;
+  
+  // Substantive-specific fields
+  gender?: Gender;
+  
+  // Indeclinable-specific fields
+  grammatical_case?: string;
+  
+  // Verb-specific fields
+  root_devanagari?: string;
+  verb_class?: number;
+  voice?: Voice;
+  standard_form?: string;
+  past_imperfect?: string;
+  potential?: string;
+  imperative?: string;
+  past_participle?: string;
+  gerund?: string;
+  infinitive?: string;
+  ppp?: string;
+  
+  // Metadata
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+// Type guards for vocabulary entries
+export interface VerbEntry extends VocabularyEntry {
+  word_type: "verb";
+  verb_class: number;
+  voice: Voice;
+}
+
+export interface SubstantiveEntry extends VocabularyEntry {
+  word_type: "substantive";
+  gender: Gender;
+}
+
+export interface IndeclinableEntry extends VocabularyEntry {
+  word_type: "indeclinable";
+}
