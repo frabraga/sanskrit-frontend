@@ -101,7 +101,10 @@ export default function VocabularioPage() {
         <div className="container mx-auto max-w-4xl">
           {/* Header */}
           <div className="mb-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center" style={{ fontFamily: "serif" }}>
+            <h1
+              className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center"
+              style={{ fontFamily: "serif" }}
+            >
               शब्दकोशः
             </h1>
 
@@ -153,18 +156,24 @@ export default function VocabularioPage() {
               >
                 {/* Main Row */}
                 <div className="flex items-baseline gap-3 flex-wrap">
-                  {/* Word in Devanagari */}
+                  {/* Main headword: verbs show root first, fallback to word */}
                   <span
                     className="text-2xl font-bold text-black"
                     style={{ fontFamily: "serif" }}
                   >
-                    {entry.word_devanagari}
+                    {entry.word_type === "verb"
+                      ? entry.root_devanagari || entry.word_devanagari
+                      : entry.word_devanagari}
                   </span>
 
-                  {/* Type Badge */}
-                  {entry.word_type === "substantive" && entry.gender && (
+                  {/* Type Badge for Substantives (noun/adjective/pronoun) */}
+                  {entry.word_type === "substantive" && (
                     <span className="text-base font-italic text-red-600">
-                      {getGenderLabel(entry.gender)}
+                      {entry.word_subtype === "adjective"
+                        ? "adj."
+                        : entry.word_subtype === "pronoun"
+                        ? "pron."
+                        : getGenderLabel(entry.gender)}
                     </span>
                   )}
                   {entry.word_type === "verb" && entry.verb_class && (
@@ -175,12 +184,7 @@ export default function VocabularioPage() {
                   )}
                   {entry.word_type === "indeclinable" && (
                     <span className="text-base font-italic text-red-600">
-                      a.
-                    </span>
-                  )}
-                  {entry.word_type === "verb" && entry.ppp && (
-                    <span className="text-base font-italic text-red-600">
-                      ppp.
+                      ind.
                     </span>
                   )}
 
@@ -194,34 +198,35 @@ export default function VocabularioPage() {
                 {entry.word_type === "verb" && (
                   <div className="mt-3">
                     <div className="flex flex-wrap gap-x-4 gap-y-2 text-base text-gray-600">
-                      {entry.past_imperfect && (
-                        <span>
-                          • v.pas.{" "}
-                          <span style={{ fontFamily: "serif" }} className="text-gray-900">
-                            {entry.past_imperfect}
+                      {entry.standard_form && (
+                        <span className="text-lg text-gray-700">
+                          pres.{" "}
+                          <span
+                            style={{ fontFamily: "serif" }}
+                            className="text-gray-900 text-lg"
+                          >
+                            {entry.standard_form}
                           </span>
                         </span>
                       )}
-                      {entry.potential && (
+                      {entry.past_participle && (
                         <span>
                           • p.per.{" "}
-                          <span style={{ fontFamily: "serif" }} className="text-gray-900">
-                            {entry.potential}
-                          </span>
-                        </span>
-                      )}
-                      {entry.imperative && (
-                        <span>
-                          • ppp.{" "}
-                          <span style={{ fontFamily: "serif" }} className="text-gray-900">
-                            {entry.imperative}
+                          <span
+                            style={{ fontFamily: "serif" }}
+                            className="text-gray-900"
+                          >
+                            {entry.past_participle}
                           </span>
                         </span>
                       )}
                       {entry.ppp && (
                         <span>
                           • ppra.{" "}
-                          <span style={{ fontFamily: "serif" }} className="text-gray-900">
+                          <span
+                            style={{ fontFamily: "serif" }}
+                            className="text-gray-900"
+                          >
                             {entry.ppp}
                           </span>
                         </span>
@@ -229,7 +234,10 @@ export default function VocabularioPage() {
                       {entry.past_participle && (
                         <span>
                           • ppp.{" "}
-                          <span style={{ fontFamily: "serif" }} className="text-gray-900">
+                          <span
+                            style={{ fontFamily: "serif" }}
+                            className="text-gray-900"
+                          >
                             {entry.past_participle}
                           </span>
                         </span>
@@ -237,7 +245,10 @@ export default function VocabularioPage() {
                       {entry.gerund && (
                         <span>
                           • ger.{" "}
-                          <span style={{ fontFamily: "serif" }} className="text-gray-900">
+                          <span
+                            style={{ fontFamily: "serif" }}
+                            className="text-gray-900"
+                          >
                             {entry.gerund}
                           </span>
                         </span>
@@ -245,27 +256,48 @@ export default function VocabularioPage() {
                       {entry.infinitive && (
                         <span>
                           • inf.{" "}
-                          <span style={{ fontFamily: "serif" }} className="text-gray-900">
+                          <span
+                            style={{ fontFamily: "serif" }}
+                            className="text-gray-900"
+                          >
                             {entry.infinitive}
                           </span>
                         </span>
                       )}
-                    </div>
-                    
-                    {/* Additional info for verbs - second line */}
-                    {entry.root_devanagari && (
-                      <div className="mt-2 text-sm text-gray-600">
-                        <span style={{ fontFamily: "serif" }}>
-                          {entry.root_devanagari}
-                        </span>
-                        {entry.standard_form && (
-                          <span style={{ fontFamily: "serif" }}>
-                            {" • "}
-                            {entry.standard_form}
+                      {entry.imperative && (
+                        <span>
+                          • imp.{" "}
+                          <span
+                            style={{ fontFamily: "serif" }}
+                            className="text-gray-900"
+                          >
+                            {entry.imperative}
                           </span>
-                        )}
-                      </div>
-                    )}
+                        </span>
+                      )}
+                      {entry.past_imperfect && (
+                        <span>
+                          • p.imp.{" "}
+                          <span
+                            style={{ fontFamily: "serif" }}
+                            className="text-gray-900"
+                          >
+                            {entry.past_imperfect}
+                          </span>
+                        </span>
+                      )}
+                      {entry.potential && (
+                        <span>
+                          • pot.{" "}
+                          <span
+                            style={{ fontFamily: "serif" }}
+                            className="text-gray-900"
+                          >
+                            {entry.potential}
+                          </span>
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -291,7 +323,8 @@ export default function VocabularioPage() {
                 onClick={() => setResultsPerPage(resultsPerPage + 10)}
                 className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
               >
-                Carregar mais ({filteredVocabulary.length - displayedVocabulary.length}{" "}
+                Carregar mais (
+                {filteredVocabulary.length - displayedVocabulary.length}{" "}
                 restantes)
               </button>
             </div>
@@ -299,8 +332,9 @@ export default function VocabularioPage() {
 
           {/* Results Count */}
           <div className="mt-4 text-center text-sm text-gray-700">
-            Mostrando {displayedVocabulary.length} de {filteredVocabulary.length}{" "}
-            resultado{filteredVocabulary.length !== 1 ? "s" : ""}
+            Mostrando {displayedVocabulary.length} de{" "}
+            {filteredVocabulary.length} resultado
+            {filteredVocabulary.length !== 1 ? "s" : ""}
           </div>
 
           {/* Footer */}

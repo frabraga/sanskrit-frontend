@@ -91,33 +91,37 @@ export interface PratisakhyaSutra {
 export type WordType = "verb" | "substantive" | "indeclinable";
 export type Gender = "masculine" | "feminine" | "neuter";
 export type Voice = "parasmaipada" | "atmanepada" | "ubhayapada";
+// Subtype only applies to substantives; keeps UI rendering simple
+export type WordSubtype = "noun" | "adjective" | "pronoun";
 
 export interface VocabularyEntry {
   id: number;
   documentId?: string;
   word_type: WordType;
+  // Only for substantives, used for UI badges (e.g., adj., pron.)
+  word_subtype?: WordSubtype;
   word_devanagari: string;
   order_index: number;
   is_published: boolean;
   lesson_reference?: string;
   notes?: string;
-  
+
   // Transliteration fields
   itrans?: string;
   iast?: string;
   harvard_kyoto?: string;
-  
+
   // Translation fields
   meaning_pt?: string;
   meaning_es?: string;
   meaning_en?: string;
-  
+
   // Substantive-specific fields
   gender?: Gender;
-  
+
   // Indeclinable-specific fields
   grammatical_case?: string;
-  
+
   // Verb-specific fields
   root_devanagari?: string;
   verb_class?: number;
@@ -130,7 +134,7 @@ export interface VocabularyEntry {
   gerund?: string;
   infinitive?: string;
   ppp?: string;
-  
+
   // Metadata
   createdAt: string;
   updatedAt: string;
