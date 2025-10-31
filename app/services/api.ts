@@ -137,7 +137,7 @@ export async function getPratisakhyaSutraByNumber(
 
 export async function getAllVocabulary(): Promise<VocabularyEntry[]> {
   const response = await fetch(
-    `${STRAPI_URL}/api/vocabularies?sort=order_index:asc&filters[is_published][$eq]=true`,
+    `${STRAPI_URL}/api/vocabularies?sort=order_index:asc&filters[is_published][$eq]=true&pagination[pageSize]=1000`,
     {
       headers: apiHeaders,
     }

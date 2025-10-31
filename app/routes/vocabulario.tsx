@@ -7,6 +7,10 @@ export default function VocabularioPage() {
   const [vocabulary, setVocabulary] = useState<VocabularyEntry[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [resultsPerPage, setResultsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedLanguage, setSelectedLanguage] = useState<"pt" | "en" | "es">(
+    "pt"
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,13 +41,26 @@ export default function VocabularioPage() {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (entry) =>
+          // Main word fields
           entry.word_devanagari?.toLowerCase().includes(term) ||
+          entry.root_devanagari?.toLowerCase().includes(term) ||
+          // Transliteration fields
           entry.itrans?.toLowerCase().includes(term) ||
           entry.iast?.toLowerCase().includes(term) ||
           entry.harvard_kyoto?.toLowerCase().includes(term) ||
+          // Translation fields
           entry.meaning_pt?.toLowerCase().includes(term) ||
           entry.meaning_es?.toLowerCase().includes(term) ||
-          entry.meaning_en?.toLowerCase().includes(term)
+          entry.meaning_en?.toLowerCase().includes(term) ||
+          // Verb declension fields
+          entry.standard_form?.toLowerCase().includes(term) ||
+          entry.past_imperfect?.toLowerCase().includes(term) ||
+          entry.potential?.toLowerCase().includes(term) ||
+          entry.imperative?.toLowerCase().includes(term) ||
+          entry.past_participle?.toLowerCase().includes(term) ||
+          entry.gerund?.toLowerCase().includes(term) ||
+          entry.infinitive?.toLowerCase().includes(term) ||
+          entry.ppp?.toLowerCase().includes(term)
       );
     }
 
@@ -70,10 +87,81 @@ export default function VocabularioPage() {
     return labels[voice as keyof typeof labels] || voice;
   };
 
+  // Get translation based on selected language
+  const getTranslation = (entry: VocabularyEntry): string => {
+    if (selectedLanguage === "pt") {
+      return entry.meaning_pt || entry.meaning_en || entry.meaning_es || "";
+    } else if (selectedLanguage === "en") {
+      return entry.meaning_en || entry.meaning_pt || entry.meaning_es || "";
+    } else {
+      return entry.meaning_es || entry.meaning_pt || entry.meaning_en || "";
+    }
+  };
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredVocabulary.length / resultsPerPage);
+
+  // Reset to page 1 when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   // Paginate results
   const displayedVocabulary = useMemo(() => {
-    return filteredVocabulary.slice(0, resultsPerPage);
-  }, [filteredVocabulary, resultsPerPage]);
+    const startIndex = (currentPage - 1) * resultsPerPage;
+    const endIndex = startIndex + resultsPerPage;
+    return filteredVocabulary.slice(startIndex, endIndex);
+  }, [filteredVocabulary, resultsPerPage, currentPage]);
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisible = 5; // Show max 5 page numbers
+
+    if (totalPages <= maxVisible + 2) {
+      // Show all pages if total is small
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+
+      // Calculate range around current page
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+
+      // Adjust if we're near the beginning
+      if (currentPage <= 3) {
+        end = Math.min(maxVisible, totalPages - 1);
+      }
+
+      // Adjust if we're near the end
+      if (currentPage >= totalPages - 2) {
+        start = Math.max(2, totalPages - maxVisible + 1);
+      }
+
+      // Add ellipsis if needed
+      if (start > 2) {
+        pages.push("...");
+      }
+
+      // Add middle pages
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      // Add ellipsis if needed
+      if (end < totalPages - 1) {
+        pages.push("...");
+      }
+
+      // Always show last page
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
 
   if (loading) {
     return (
@@ -110,6 +198,43 @@ export default function VocabularioPage() {
 
             {/* Controls Row */}
             <div className="flex flex-col md:flex-row gap-4 items-center justify-center mb-4">
+              {/* Language Toggle */}
+              <div className="flex items-center gap-2">
+                <span className="text-gray-700 text-sm font-medium"></span>
+                <div className="flex gap-1 bg-gray-100 rounded-md p-1">
+                  <button
+                    onClick={() => setSelectedLanguage("pt")}
+                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                      selectedLanguage === "pt"
+                        ? "bg-blue-600 text-white shadow"
+                        : "text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    PT
+                  </button>
+                  <button
+                    onClick={() => setSelectedLanguage("en")}
+                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                      selectedLanguage === "en"
+                        ? "bg-blue-600 text-white shadow"
+                        : "text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    EN
+                  </button>
+                  <button
+                    onClick={() => setSelectedLanguage("es")}
+                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                      selectedLanguage === "es"
+                        ? "bg-blue-600 text-white shadow"
+                        : "text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    ES
+                  </button>
+                </div>
+              </div>
+
               {/* Results per page */}
               <div className="flex items-center gap-2">
                 <select
@@ -172,8 +297,8 @@ export default function VocabularioPage() {
                       {entry.word_subtype === "adjective"
                         ? "adj."
                         : entry.word_subtype === "pronoun"
-                        ? "pron."
-                        : getGenderLabel(entry.gender)}
+                          ? "pron."
+                          : getGenderLabel(entry.gender)}
                     </span>
                   )}
                   {entry.word_type === "verb" && entry.verb_class && (
@@ -190,7 +315,7 @@ export default function VocabularioPage() {
 
                   {/* Translation */}
                   <span className="text-base text-black">
-                    {entry.meaning_pt || entry.meaning_es || entry.meaning_en}
+                    {getTranslation(entry)}
                   </span>
                 </div>
 
@@ -316,24 +441,84 @@ export default function VocabularioPage() {
             </div>
           )}
 
-          {/* Load More Button */}
-          {displayedVocabulary.length < filteredVocabulary.length && (
-            <div className="mt-4 text-center">
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex justify-center items-center gap-2">
+              {/* Previous Button */}
               <button
-                onClick={() => setResultsPerPage(resultsPerPage + 10)}
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Página anterior"
               >
-                Carregar mais (
-                {filteredVocabulary.length - displayedVocabulary.length}{" "}
-                restantes)
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Page Numbers */}
+              {getPageNumbers().map((page, index) => (
+                <button
+                  key={index}
+                  onClick={() =>
+                    typeof page === "number" && setCurrentPage(page)
+                  }
+                  disabled={page === "..."}
+                  className={`min-w-[40px] px-3 py-2 rounded-md transition-colors ${
+                    page === currentPage
+                      ? "bg-blue-600 text-white font-bold border-2 border-blue-700"
+                      : page === "..."
+                        ? "cursor-default text-gray-500"
+                        : "hover:bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              {/* Next Button */}
+              <button
+                onClick={() =>
+                  setCurrentPage(Math.min(totalPages, currentPage + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Próxima página"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
               </button>
             </div>
           )}
 
           {/* Results Count */}
           <div className="mt-4 text-center text-sm text-gray-700">
-            Mostrando {displayedVocabulary.length} de{" "}
-            {filteredVocabulary.length} resultado
+            Mostrando{" "}
+            {displayedVocabulary.length > 0
+              ? (currentPage - 1) * resultsPerPage + 1
+              : 0}{" "}
+            de {filteredVocabulary.length} resultado
             {filteredVocabulary.length !== 1 ? "s" : ""}
           </div>
 
