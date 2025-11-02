@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import SanskritLayout from "~/components/SanskritLayout";
 import { getAllVocabulary } from "~/services/api";
 import type { VocabularyEntry } from "~/types/sutra";
+import { compareSanskrit, getVocabularySortKey } from "~/utils/sanskritSort";
 
 export default function VocabularioPage() {
   const [vocabulary, setVocabulary] = useState<VocabularyEntry[]>([]);
@@ -32,7 +33,7 @@ export default function VocabularioPage() {
     loadVocabulary();
   }, []);
 
-  // Client-side search
+  // Client-side search and sort
   const filteredVocabulary = useMemo(() => {
     let filtered = vocabulary;
 
@@ -63,6 +64,14 @@ export default function VocabularioPage() {
           entry.ppp?.toLowerCase().includes(term)
       );
     }
+
+    // Sort by Sanskrit alphabetical order
+    // For verbs, sort by root; for other words, sort by the main word
+    filtered = [...filtered].sort((a, b) => {
+      const aKey = getVocabularySortKey(a);
+      const bKey = getVocabularySortKey(b);
+      return compareSanskrit(aKey, bKey);
+    });
 
     return filtered;
   }, [vocabulary, searchTerm]);

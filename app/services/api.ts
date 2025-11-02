@@ -7,7 +7,8 @@ import type {
 } from "~/types/sutra";
 
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
-const STRAPI_API_KEY = process.env.STRAPI_API_KEY;
+const STRAPI_API_KEY =
+  "ffec5daf80d460d470b621ccb46c54570e6ce62c138c84d20c6c93469dac259c8c0209408a2bd0ad2966fecb10636b062759adbfbb6765d71ac9b185c22c97ff054f47b79adaa334e4eea25ff1272e45f698853f2a897294b39007d62d1ce606c376711c8b23050424133594a597711cded296a44978254f48c55d525734c829";
 
 const apiHeaders = {
   "Content-Type": "application/json",
