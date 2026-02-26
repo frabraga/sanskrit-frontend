@@ -19,7 +19,7 @@ export async function getAllShabdas(): Promise<Shabda[]> {
     `${STRAPI_URL}/api/shabdas?populate[declensions]=true&populate[audio]=true&sort=order_index:asc&filters[is_published][$eq]=true`,
     {
       headers: apiHeaders,
-    }
+    },
   );
 
   if (!response.ok) {
@@ -35,7 +35,7 @@ export async function getShabdaById(id: number): Promise<Shabda | null> {
     `${STRAPI_URL}/api/shabdas/${id}?populate[declensions]=true&populate[audio]=true`,
     {
       headers: apiHeaders,
-    }
+    },
   );
 
   if (!response.ok) {
@@ -48,13 +48,13 @@ export async function getShabdaById(id: number): Promise<Shabda | null> {
 }
 
 export async function getShabdaByIndex(
-  orderIndex: number
+  orderIndex: number,
 ): Promise<Shabda | null> {
   const response = await fetch(
     `${STRAPI_URL}/api/shabdas?populate[declensions]=true&populate[audio]=true&filters[order_index][$eq]=${orderIndex}&filters[is_published][$eq]=true`,
     {
       headers: apiHeaders,
-    }
+    },
   );
 
   if (!response.ok) {
@@ -67,10 +67,10 @@ export async function getShabdaByIndex(
 
 export async function getAllSutras(): Promise<Sutra[]> {
   const response = await fetch(
-    `${STRAPI_URL}/api/panini-sutras?sort=order_index:asc&filters[is_published][$eq]=true`,
+    `${STRAPI_URL}/api/panini-sutras?sort=order_index:asc&filters[is_published][$eq]=true&pagination[pageSize]=1000`,
     {
       headers: apiHeaders,
-    }
+    },
   );
 
   if (!response.ok) {
@@ -83,10 +83,10 @@ export async function getAllSutras(): Promise<Sutra[]> {
 
 export async function getSutraByNumber(number: string): Promise<Sutra | null> {
   const response = await fetch(
-    `${STRAPI_URL}/api/panini-sutras?filters[number][$eq]=${number}&filters[is_published][$eq]=true`,
+    `${STRAPI_URL}/api/panini-sutras?filters[number][$eq]=${number}&filters[is_published][$eq]=true&pagination[pageSize]=1000`,
     {
       headers: apiHeaders,
-    }
+    },
   );
 
   if (!response.ok) {
@@ -99,15 +99,15 @@ export async function getSutraByNumber(number: string): Promise<Sutra | null> {
 
 export async function getAllPratisakhyaSutras(): Promise<PratisakhyaSutra[]> {
   const response = await fetch(
-    `${STRAPI_URL}/api/pratisakhya-sutras?sort=order_index:asc&filters[is_published][$eq]=true`,
+    `${STRAPI_URL}/api/pratisakhya-sutras?sort=order_index:asc&filters[is_published][$eq]=true&pagination[pageSize]=1000`,
     {
       headers: apiHeaders,
-    }
+    },
   );
 
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch pratisakhya sutras: ${response.statusText}`
+      `Failed to fetch pratisakhya sutras: ${response.statusText}`,
     );
   }
 
@@ -116,18 +116,18 @@ export async function getAllPratisakhyaSutras(): Promise<PratisakhyaSutra[]> {
 }
 
 export async function getPratisakhyaSutraByNumber(
-  number: string
+  number: string,
 ): Promise<PratisakhyaSutra | null> {
   const response = await fetch(
-    `${STRAPI_URL}/api/pratisakhya-sutras?filters[number][$eq]=${number}&filters[is_published][$eq]=true`,
+    `${STRAPI_URL}/api/pratisakhya-sutras?filters[number][$eq]=${number}&filters[is_published][$eq]=true&pagination[pageSize]=1000`,
     {
       headers: apiHeaders,
-    }
+    },
   );
 
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch pratisakhya sutra: ${response.statusText}`
+      `Failed to fetch pratisakhya sutra: ${response.statusText}`,
     );
   }
 
@@ -140,7 +140,7 @@ export async function getAllVocabulary(): Promise<VocabularyEntry[]> {
     `${STRAPI_URL}/api/vocabularies?sort=order_index:asc&filters[is_published][$eq]=true&pagination[pageSize]=1000`,
     {
       headers: apiHeaders,
-    }
+    },
   );
 
   if (!response.ok) {
