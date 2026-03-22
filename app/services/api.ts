@@ -16,7 +16,7 @@ const apiHeaders = {
 
 export async function getAllShabdas(): Promise<Shabda[]> {
   const response = await fetch(
-    `${STRAPI_URL}/api/shabdas?populate[declensions]=true&populate[audio]=true&sort=order_index:asc&filters[is_published][$eq]=true`,
+    `${STRAPI_URL}/api/shabdas?populate[declensions]=true&populate[audio]=true&sort=order_index:asc&filters[is_published][$eq]=true&pagination[pageSize]=1000`,
     {
       headers: apiHeaders,
     },
@@ -51,7 +51,7 @@ export async function getShabdaByIndex(
   orderIndex: number,
 ): Promise<Shabda | null> {
   const response = await fetch(
-    `${STRAPI_URL}/api/shabdas?populate[declensions]=true&populate[audio]=true&filters[order_index][$eq]=${orderIndex}&filters[is_published][$eq]=true`,
+    `${STRAPI_URL}/api/shabdas?populate[declensions]=true&populate[audio]=true&filters[order_index][$eq]=${orderIndex}&filters[is_published][$eq]=true&pagination[pageSize]=1000`,
     {
       headers: apiHeaders,
     },
