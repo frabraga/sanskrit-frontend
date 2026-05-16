@@ -47,6 +47,7 @@ export interface Shabda {
   prakarana_label: string;
   order_index: number;
   is_published: boolean;
+  commentary?: string;
   declensions: Declension[];
   audio?: StrapiMedia;
   createdAt: string;

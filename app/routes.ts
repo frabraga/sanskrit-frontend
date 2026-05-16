@@ -8,4 +8,6 @@ export default [
   route("/vocabulario", "routes/vocabulario.tsx"),
   route("/maheshvara-sutrani", "routes/maheshvara-sutrani.tsx"),
   route("/pratishakhyam", "routes/pratishakhyam.tsx"),
+  // Suppress Chrome DevTools probe — returns 404 cleanly instead of crashing
+  route("/.well-known/*", "routes/not-found.tsx"),
 ] satisfies RouteConfig;

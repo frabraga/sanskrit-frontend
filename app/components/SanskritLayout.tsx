@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 
 interface SanskritLayoutProps {
@@ -7,6 +7,7 @@ interface SanskritLayoutProps {
 
 const SanskritLayout: React.FC<SanskritLayoutProps> = ({ children }) => {
   const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const navigationItems = [
     {
@@ -107,18 +108,24 @@ const SanskritLayout: React.FC<SanskritLayoutProps> = ({ children }) => {
   ];
 
   const isActive = (href: string) => {
-    if (href === "/") {
-      return location.pathname === "/";
-    }
+    if (href === "/") return location.pathname === "/";
     return location.pathname.startsWith(href);
   };
+
+  const currentPage = navigationItems.find((item) => isActive(item.href));
+
+  // Close menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       {/* Navigation Header */}
-      <nav className="bg-white shadow-sm border-b border-gray-200">
+      <nav className="bg-white shadow-sm border-b border-gray-200 relative z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
+            {/* Logo + desktop nav */}
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
                 <Link to="/" className="text-xl font-bold text-gray-900">
@@ -143,31 +150,60 @@ const SanskritLayout: React.FC<SanskritLayoutProps> = ({ children }) => {
                 ))}
               </div>
             </div>
+
+            {/* Mobile: current page name + hamburger */}
+            <div className="flex items-center sm:hidden">
+              {currentPage && (
+                <span
+                  className="text-sm text-blue-700 font-medium mr-3"
+                  style={{ fontFamily: "serif" }}
+                >
+                  {currentPage.name}
+                </span>
+              )}
+              <button
+                onClick={() => setMobileOpen((o) => !o)}
+                className="p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none"
+                aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}
+              >
+                {mobileOpen ? (
+                  // X icon
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  // Hamburger icon
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Mobile menu */}
-        <div className="sm:hidden">
-          <div className="pt-2 pb-3 space-y-1">
-            {navigationItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200 ${
-                  isActive(item.href)
-                    ? "bg-blue-50 border-blue-500 text-blue-700"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50 hover:border-gray-300"
-                }`}
-                style={{ fontFamily: "serif" }}
-              >
-                <span className="inline-flex items-center">
-                  <span className="mr-2">{item.icon}</span>
+        {/* Mobile dropdown menu */}
+        {mobileOpen && (
+          <div className="sm:hidden border-t border-gray-200 bg-white shadow-lg">
+            <div className="py-2">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`flex items-center pl-4 pr-6 py-3 border-l-4 text-base font-medium transition-colors duration-200 ${
+                    isActive(item.href)
+                      ? "bg-blue-50 border-blue-500 text-blue-700"
+                      : "border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:border-gray-300"
+                  }`}
+                  style={{ fontFamily: "serif" }}
+                >
+                  <span className="mr-3 text-current">{item.icon}</span>
                   {item.name}
-                </span>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </nav>
 
       {/* Main Content */}
