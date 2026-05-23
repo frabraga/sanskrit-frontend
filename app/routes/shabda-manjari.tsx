@@ -4,7 +4,189 @@ import SanskritLayout from "~/components/SanskritLayout";
 import NavigationControls from "~/components/NavigationControls";
 import AudioPlayer from "~/components/AudioPlayer";
 import { getAllShabdas } from "~/services/api";
-import type { Shabda } from "~/types/sutra";
+import type { Shabda, Declension } from "~/types/sutra";
+
+// Gendered numeral entries carry the gender in category (पुंसि/स्त्रियाम्/क्लीबे).
+// Some entries have prakarana_label = null, so we rely on category, not prakarana_label.
+function isGenderMarkedNumeral(shabda: Shabda): boolean {
+  const cat = shabda.category ?? "";
+  return (
+    cat.includes("पुंसि") ||
+    cat.includes("स्त्रियाम्") ||
+    cat.includes("क्लीबे")
+  );
+}
+
+function isNumeralWithSiblings(shabda: Shabda, all: Shabda[]): boolean {
+  if (!isGenderMarkedNumeral(shabda)) return false;
+  return (
+    all.filter(
+      (s) => isGenderMarkedNumeral(s) && s.order_index === shabda.order_index
+    ).length > 1
+  );
+}
+
+function getNumeralSiblings(shabda: Shabda, all: Shabda[]): Shabda[] {
+  const siblings = all.filter(
+    (s) => isGenderMarkedNumeral(s) && s.order_index === shabda.order_index
+  );
+  const order = (s: Shabda) =>
+    s.category.includes("पुंसि") ? 0 : s.category.includes("स्त्रियाम्") ? 1 : 2;
+  return siblings.sort((a, b) => order(a) - order(b));
+}
+
+function getNumeralType(shabda: Shabda): "singular" | "dual" | "plural" {
+  const d = shabda.declensions[0];
+  if (d?.singular) return "singular";
+  if (d?.dual) return "dual";
+  return "plural";
+}
+
+// Form-variant siblings: same title + order_index, but not gender-marked.
+// Example: अष्टन् has two forms (short/long ending) stored as separate entries.
+function isFormSibling(shabda: Shabda, all: Shabda[]): boolean {
+  if (isGenderMarkedNumeral(shabda) || !shabda.title) return false;
+  return (
+    all.filter(
+      (s) =>
+        !isGenderMarkedNumeral(s) &&
+        s.title === shabda.title &&
+        s.order_index === shabda.order_index
+    ).length > 1
+  );
+}
+
+function getFormSiblings(shabda: Shabda, all: Shabda[]): Shabda[] {
+  return all.filter(
+    (s) =>
+      !isGenderMarkedNumeral(s) &&
+      s.title === shabda.title &&
+      s.order_index === shabda.order_index
+  );
+}
+
+function buildDisplayItems(shabdas: Shabda[]): Shabda[] {
+  const seenGender = new Set<number>();
+  const seenForm = new Set<string>();
+  return shabdas.filter((s) => {
+    // Gender siblings (एक/द्वि/त्रि/चतुर्)
+    if (isGenderMarkedNumeral(s)) {
+      const siblings = shabdas.filter(
+        (s2) => isGenderMarkedNumeral(s2) && s2.order_index === s.order_index
+      );
+      if (siblings.length <= 1) return true;
+      if (seenGender.has(s.order_index)) return false;
+      seenGender.add(s.order_index);
+      return true;
+    }
+    // Form siblings (अष्टन् etc.)
+    if (s.title) {
+      const key = `${s.order_index}|${s.title}`;
+      const siblings = shabdas.filter(
+        (s2) =>
+          !isGenderMarkedNumeral(s2) &&
+          s2.title === s.title &&
+          s2.order_index === s.order_index
+      );
+      if (siblings.length <= 1) return true;
+      if (seenForm.has(key)) return false;
+      seenForm.add(key);
+      return true;
+    }
+    return true;
+  });
+}
+
+function NumeralGroupTable({ siblings }: { siblings: Shabda[] }) {
+  const numberType = getNumeralType(siblings[0]);
+  const getValue = (s: Shabda, d: Declension) => d[numberType] || "–";
+  const masc = siblings.find((s) => s.category.includes("पुंसि"));
+  const fem = siblings.find((s) => s.category.includes("स्त्रियाम्"));
+  const neuter = siblings.find((s) => s.category.includes("क्लीबे"));
+  const cases = (masc ?? siblings[0]).declensions;
+
+  return (
+    <table className="w-full border-collapse border-2 border-blue-700 table-fixed">
+      <thead>
+        <tr>
+          <th className="border-2 border-blue-700 bg-blue-600 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/6"></th>
+          <th className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/4">
+            पुं
+          </th>
+          <th className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/4">
+            स्त्री
+          </th>
+          <th className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/4">
+            क्लीब
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {cases.map((d, index) => (
+          <tr key={d.id}>
+            <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
+              {d.case_label}
+            </td>
+            {[masc, fem, neuter].map((sibling, gi) => (
+              <td
+                key={gi}
+                className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
+                  index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
+                }`}
+                style={{ fontFamily: "serif" }}
+              >
+                {sibling ? getValue(sibling, sibling.declensions[index]) : "–"}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function FormGroupTable({ siblings }: { siblings: Shabda[] }) {
+  const numberType = getNumeralType(siblings[0]);
+  const getLabel = (s: Shabda) => {
+    const match = s.category?.match(/\(([^)]+)\)/);
+    return match ? match[1] : s.category || "";
+  };
+  const cases = siblings[0].declensions;
+  return (
+    <table className="w-full border-collapse border-2 border-blue-700 table-fixed">
+      <thead>
+        <tr>
+          <th className="border-2 border-blue-700 bg-blue-600 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/6"></th>
+          {siblings.map((s, i) => (
+            <th key={i} className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/4">
+              {getLabel(s)}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {cases.map((d, index) => (
+          <tr key={d.id}>
+            <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
+              {d.case_label}
+            </td>
+            {siblings.map((s, i) => (
+              <td
+                key={i}
+                className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
+                  index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
+                }`}
+                style={{ fontFamily: "serif" }}
+              >
+                {s.declensions[index]?.[numberType] || "–"}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
 
 // Extracts the Portuguese/transliterated term from parentheses at end of title
 // e.g. "अकारान्तः पुंलिङ्गः 'राम' शब्दः (Rāma)" → "Rāma"
@@ -71,8 +253,9 @@ export default function ShabdaManjariPage() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const totalCount = shabdas.length;
-  const shabda = shabdas[currentIndex - 1] ?? null;
+  const displayItems = buildDisplayItems(shabdas);
+  const totalCount = displayItems.length;
+  const shabda = displayItems[currentIndex - 1] ?? null;
 
   const navigateTo = (position: number) => {
     setSearchParams({ current: position.toString() });
@@ -88,7 +271,7 @@ export default function ShabdaManjariPage() {
   };
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const suggestions = getSuggestions(shabdas, query);
+    const suggestions = getSuggestions(displayItems, query);
 
     if (e.key === "Escape") {
       setShowSuggestions(false);
@@ -108,7 +291,7 @@ export default function ShabdaManjariPage() {
       }
       if (e.key === "Enter") {
         e.preventDefault();
-        const position = shabdas.indexOf(suggestions[highlightedIdx]) + 1;
+        const position = displayItems.indexOf(suggestions[highlightedIdx]) + 1;
         navigateTo(position);
         return;
       }
@@ -123,7 +306,7 @@ export default function ShabdaManjariPage() {
     }
   };
 
-  const suggestions = getSuggestions(shabdas, query);
+  const suggestions = getSuggestions(displayItems, query);
 
   const handlePrevious = () => {
     if (currentIndex > 1) {
@@ -180,7 +363,7 @@ export default function ShabdaManjariPage() {
               <ul className="absolute z-50 left-4 right-4 bg-white border-2 border-blue-400 rounded shadow-lg mt-1 max-h-72 overflow-y-auto">
                 {suggestions.map((s, i) => {
                   const pt = extractPortuguese(s.title);
-                  const position = shabdas.indexOf(s) + 1;
+                  const position = displayItems.indexOf(s) + 1;
                   return (
                     <li
                       key={s.id}
@@ -230,14 +413,16 @@ export default function ShabdaManjariPage() {
             {/* Content Section */}
             <div className="px-2 md:px-8 pb-8 md:pb-16">
               <div className="text-center mb-8">
-                <h2
-                  className="text-3xl md:text-5xl font-bold text-gray-900 mb-3 md:mb-4 mt-4 md:mt-8"
-                  style={{ fontFamily: "serif" }}
-                >
-                  {shabda.category}
-                </h2>
+                {!isNumeralWithSiblings(shabda, shabdas) && !isFormSibling(shabda, shabdas) && (
+                  <h2
+                    className="text-3xl md:text-5xl font-bold text-gray-900 mb-3 md:mb-4 mt-4 md:mt-8"
+                    style={{ fontFamily: "serif" }}
+                  >
+                    {shabda.category}
+                  </h2>
+                )}
                 <h3
-                  className="text-2xl md:text-4xl font-semibold text-gray-800 mb-4 md:mb-6"
+                  className="text-2xl md:text-4xl font-semibold text-gray-800 mb-4 md:mb-6 mt-4 md:mt-8"
                   style={{ fontFamily: "serif" }}
                 >
                   {shabda.prakarana_label}
@@ -252,56 +437,64 @@ export default function ShabdaManjariPage() {
 
               {/* Declension Table */}
               <div className="w-full">
-                <table className="w-full border-collapse border-2 border-blue-700 table-fixed">
-                  {/* Table Header */}
-                  <thead>
-                    <tr>
-                      <th className="border-2 border-blue-700 bg-blue-600 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/6"></th>
-                      <th className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/4">
-                        S
-                      </th>
-                      <th className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/4">
-                        D
-                      </th>
-                      <th className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/4">
-                        P
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {shabda.declensions.map((declension, index) => (
-                      <tr key={declension.id}>
-                        <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
-                          {declension.case_label}
-                        </td>
-                        <td
-                          className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
-                            index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
-                          }`}
-                          style={{ fontFamily: "serif" }}
-                        >
-                          {declension.singular}
-                        </td>
-                        <td
-                          className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
-                            index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
-                          }`}
-                          style={{ fontFamily: "serif" }}
-                        >
-                          {declension.dual}
-                        </td>
-                        <td
-                          className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
-                            index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
-                          }`}
-                          style={{ fontFamily: "serif" }}
-                        >
-                          {declension.plural}
-                        </td>
+                {isNumeralWithSiblings(shabda, shabdas) ? (
+                  <NumeralGroupTable
+                    siblings={getNumeralSiblings(shabda, shabdas)}
+                  />
+                ) : isFormSibling(shabda, shabdas) ? (
+                  <FormGroupTable siblings={getFormSiblings(shabda, shabdas)} />
+                ) : (
+                  <table className="w-full border-collapse border-2 border-blue-700 table-fixed">
+                    {/* Table Header */}
+                    <thead>
+                      <tr>
+                        <th className="border-2 border-blue-700 bg-blue-600 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/6"></th>
+                        <th className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/4">
+                          S
+                        </th>
+                        <th className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/4">
+                          D
+                        </th>
+                        <th className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-sm md:text-2xl font-bold w-1/4">
+                          P
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {shabda.declensions.map((declension, index) => (
+                        <tr key={declension.id}>
+                          <td className="border-2 border-blue-700 bg-blue-500 text-white p-1 md:p-4 text-center text-sm md:text-xl font-bold">
+                            {declension.case_label}
+                          </td>
+                          <td
+                            className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
+                              index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
+                            }`}
+                            style={{ fontFamily: "serif" }}
+                          >
+                            {declension.singular}
+                          </td>
+                          <td
+                            className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
+                              index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
+                            }`}
+                            style={{ fontFamily: "serif" }}
+                          >
+                            {declension.dual}
+                          </td>
+                          <td
+                            className={`border-2 border-blue-700 text-black p-1 md:p-4 text-center text-base md:text-2xl ${
+                              index % 2 === 0 ? "bg-blue-100" : "bg-blue-50"
+                            }`}
+                            style={{ fontFamily: "serif" }}
+                          >
+                            {declension.plural}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
 
               {/* Audio Player Below Table */}

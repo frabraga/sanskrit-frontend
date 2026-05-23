@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sanscrit-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "/Users/chico/Programming/sanscrito-jose/sanscrit-frontend",
+      "port": 5173
+    }
+  ]
+}
