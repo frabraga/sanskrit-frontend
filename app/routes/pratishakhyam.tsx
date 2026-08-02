@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router";
 import SanskritLayout from "~/components/SanskritLayout";
 import NavigationControls from "~/components/NavigationControls";
+import SutraJumpSearch from "~/components/SutraJumpSearch";
 import {
   getAllPratisakhyaSutras,
   getPratisakhyaSutraByNumber,
@@ -69,6 +70,10 @@ export default function PratishakhyamPage() {
     }
   };
 
+  const handleJump = (target: PratisakhyaSutra) => {
+    setSearchParams({ current: target.number });
+  };
+
   if (loading) {
     return (
       <SanskritLayout>
@@ -97,6 +102,13 @@ export default function PratishakhyamPage() {
     <SanskritLayout>
       <div className="p-2 md:p-4">
         <div className="container mx-auto">
+          {/* Search box */}
+          <SutraJumpSearch
+            items={allSutras}
+            onSelect={handleJump}
+            placeholder="Buscar por número (ex: 1.2)"
+          />
+
           {/* Navigation outside the blue border */}
           <NavigationControls
             currentIndex={currentIndex}
