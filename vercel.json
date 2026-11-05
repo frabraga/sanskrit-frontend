@@ -1,0 +1,16 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "sutraveda.org" }],
+      "destination": "https://www.drjosesalazar.org/sutra-veda",
+      "permanent": false
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.sutraveda.org" }],
+      "destination": "https://www.drjosesalazar.org/sutra-veda",
+      "permanent": false
+    }
+  ]
+}
